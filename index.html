@@ -1274,6 +1274,198 @@
             z-index: 1999;
         }
 
+        /* AI Button & Menu */
+        .btn-ai {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            background: linear-gradient(135deg, #ec4899, #ef4444);
+            color: white;
+            position: relative;
+            transition: opacity 0.2s;
+        }
+        .btn-ai:hover { opacity: 0.85; }
+
+        .ai-options-menu {
+            display: none;
+            position: fixed;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            z-index: 3000;
+            min-width: 200px;
+            overflow: hidden;
+        }
+        .ai-options-menu.show { display: block; }
+        .ai-options-menu button {
+            display: block;
+            width: 100%;
+            padding: 12px 16px;
+            border: none;
+            background: white;
+            text-align: left;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+            transition: background 0.15s;
+        }
+        .ai-options-menu button:hover { background: #f3f4f6; }
+        .ai-options-menu button:not(:last-child) { border-bottom: 1px solid #e5e7eb; }
+
+        .dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 4000;
+        }
+        .dialog-overlay.show { display: block; }
+
+        .api-key-dialog {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            z-index: 4001;
+            width: 400px;
+            max-width: 90vw;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+        .api-key-dialog.show { display: block; }
+        .api-key-dialog h3 { margin-bottom: 12px; color: #333; }
+        .api-key-dialog p { font-size: 13px; color: #666; margin-bottom: 12px; }
+        .api-key-dialog input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+            outline: none;
+        }
+        .api-key-dialog input:focus { border-color: #ec4899; }
+        .api-key-dialog-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .api-key-dialog-buttons button {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .api-key-dialog-buttons .btn-save-key {
+            background: linear-gradient(135deg, #ec4899, #ef4444);
+            color: white;
+        }
+        .api-key-dialog-buttons .btn-cancel-key {
+            background: #e5e7eb;
+            color: #333;
+        }
+
+        .ai-preview-modal {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            z-index: 4001;
+            width: 600px;
+            max-width: 90vw;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+        .ai-preview-modal.show { display: block; }
+        .ai-preview-modal h3 { margin-bottom: 16px; color: #333; }
+        .ai-preview-modal label { font-size: 13px; color: #555; font-weight: bold; display: block; margin-bottom: 4px; }
+        .ai-preview-modal input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            outline: none;
+        }
+        .ai-preview-modal input:focus { border-color: #ec4899; }
+        .ai-preview-modal textarea {
+            width: 100%;
+            min-height: 300px;
+            padding: 12px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: 'Comic Sans MS', cursive;
+            line-height: 1.6;
+            resize: vertical;
+            outline: none;
+            margin-bottom: 16px;
+        }
+        .ai-preview-modal textarea:focus { border-color: #ec4899; }
+        .ai-preview-buttons {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+        .ai-preview-buttons button {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .ai-preview-buttons .btn-fill-notes {
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            color: white;
+        }
+        .ai-preview-buttons .btn-fill-notes:hover { opacity: 0.85; }
+        .ai-preview-buttons .btn-fill-mindmap {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            color: white;
+        }
+        .ai-preview-buttons .btn-fill-mindmap:hover { opacity: 0.85; }
+        .ai-preview-buttons .btn-cancel-preview {
+            background: #e5e7eb;
+            color: #333;
+        }
+
+        .ai-loading {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            padding: 32px 48px;
+            z-index: 4001;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+        .ai-loading.show { display: block; }
+        .ai-loading .spinner {
+            width: 40px; height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top-color: #ec4899;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .ai-loading p { color: #555; font-size: 14px; }
+
         /* Instructions */
         .instructions {
             margin-top: 15px;
@@ -1328,6 +1520,7 @@
 
         <div class="toolbar-group">
             <button class="btn-image" id="btnImage" title="Import Gambar">Gambar</button>
+            <button class="btn-ai" id="btnAI" title="AI Analisis (A)">AI</button>
             <button class="btn-clear" id="btnClear" title="Padam Lukisan">Padam</button>
             <button class="btn-save" id="btnSave" title="Simpan Gambar (Ctrl+S)">Simpan</button>
             <button class="btn-fullscreen" id="btnFullscreen" title="Skrin Penuh (F)">Penuh</button>
@@ -1483,6 +1676,50 @@
         </div>
     </div>
 
+    <!-- AI Options Menu -->
+    <div class="ai-options-menu" id="aiOptionsMenu">
+        <button id="btnAIUpload">Upload Gambar</button>
+        <button id="btnAIPaste">Tampal dari Clipboard</button>
+        <button id="btnAISettings">Tetapan API Key</button>
+    </div>
+
+    <!-- AI Hidden File Input -->
+    <input type="file" id="aiImageInput" accept="image/*" style="display:none;">
+
+    <!-- AI Dialog Overlay -->
+    <div class="dialog-overlay" id="aiDialogOverlay"></div>
+
+    <!-- API Key Dialog -->
+    <div class="api-key-dialog" id="apiKeyDialog">
+        <h3>Tetapan API Key</h3>
+        <p>Masukkan Google Gemini API key anda. Dapatkan di <strong>aistudio.google.com</strong></p>
+        <input type="password" id="apiKeyInput" placeholder="Masukkan API key...">
+        <div class="api-key-dialog-buttons">
+            <button class="btn-cancel-key" id="btnCancelApiKey">Batal</button>
+            <button class="btn-save-key" id="btnSaveApiKey">Simpan</button>
+        </div>
+    </div>
+
+    <!-- AI Preview Modal -->
+    <div class="ai-preview-modal" id="aiPreviewModal">
+        <h3>Pratonton Kandungan AI</h3>
+        <label>Tajuk:</label>
+        <input type="text" id="aiPreviewTitle" placeholder="Tajuk halaman...">
+        <label>Kandungan:</label>
+        <textarea id="aiPreviewContent" placeholder="Kandungan akan dipaparkan di sini..."></textarea>
+        <div class="ai-preview-buttons">
+            <button class="btn-cancel-preview" id="btnCancelPreview">Batal</button>
+            <button class="btn-fill-notes" id="btnFillNotes">Isi sebagai Nota</button>
+            <button class="btn-fill-mindmap" id="btnFillMindMap">Isi sebagai Peta Minda</button>
+        </div>
+    </div>
+
+    <!-- AI Loading Indicator -->
+    <div class="ai-loading" id="aiLoading">
+        <div class="spinner"></div>
+        <p>AI sedang menganalisis...</p>
+    </div>
+
     <!-- Instructions -->
     <div class="instructions">
         <h3>Cara Penggunaan:</h3>
@@ -1495,6 +1732,7 @@
             <li><strong>Gambar (G):</strong> Import gambar, klik untuk pilih, tarik untuk gerak, tarik bucu untuk resize, klik ✕ untuk padam</li>
             <li><strong>Template:</strong> Tukar jenis garisan (biasa/4 suku/petak/kosong)</li>
             <li><strong>Timer:</strong> Set masa dan tekan Mula untuk pemasa undur</li>
+            <li><strong>AI (A):</strong> Upload gambar buku teks, AI analisis dan auto-isi nota ke garisan</li>
             <li><strong>Skrin Penuh (F):</strong> Mod persembahan tanpa toolbar</li>
             <li><strong>Tarik bucu:</strong> Tarik titik biru (teks) / hijau (bentuk) / merah jambu (gambar) untuk resize</li>
             <li><strong>Auto-simpan:</strong> Data disimpan automatik setiap 30 saat</li>
@@ -5157,7 +5395,7 @@
 
         // ==================== KEYBOARD SHORTCUTS ====================
         document.addEventListener('keydown', (e) => {
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
 
             switch(e.key.toLowerCase()) {
                 case 'p': selectTool('pen'); break;
@@ -5166,6 +5404,11 @@
                 case 'j': selectTool('table'); showTableDialog(); break;
                 case 'e': selectTool('eraser'); break;
                 case 'g': selectTool('image'); break;
+                case 'a':
+                    if (!document.getElementById('aiDialogOverlay').classList.contains('show')) {
+                        toggleAIMenu();
+                    }
+                    break;
                 case 'f': enterFullscreen(); break;
                 case 's':
                     if (e.ctrlKey || e.metaKey) { e.preventDefault(); saveAsImage(); }
@@ -5245,6 +5488,557 @@
                     break;
             }
         });
+
+        // ==================== AI ANALYSIS ====================
+        const btnAI = document.getElementById('btnAI');
+        const aiOptionsMenu = document.getElementById('aiOptionsMenu');
+        const aiImageInput = document.getElementById('aiImageInput');
+        const aiDialogOverlay = document.getElementById('aiDialogOverlay');
+        const apiKeyDialog = document.getElementById('apiKeyDialog');
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        const aiPreviewModal = document.getElementById('aiPreviewModal');
+        const aiPreviewTitle = document.getElementById('aiPreviewTitle');
+        const aiPreviewContent = document.getElementById('aiPreviewContent');
+        const aiLoading = document.getElementById('aiLoading');
+
+        // API Key Management
+        function getStoredApiKey() {
+            return localStorage.getItem('gemini_api_key') || '';
+        }
+
+        function saveApiKey(key) {
+            localStorage.setItem('gemini_api_key', key.trim());
+        }
+
+        function showApiKeyDialog() {
+            apiKeyInput.value = getStoredApiKey();
+            apiKeyDialog.classList.add('show');
+            aiDialogOverlay.classList.add('show');
+            apiKeyInput.focus();
+        }
+
+        function hideApiKeyDialog() {
+            apiKeyDialog.classList.remove('show');
+            aiDialogOverlay.classList.remove('show');
+        }
+
+        document.getElementById('btnSaveApiKey').addEventListener('click', () => {
+            const key = apiKeyInput.value.trim();
+            if (key) {
+                saveApiKey(key);
+                hideApiKeyDialog();
+            } else {
+                alert('Sila masukkan API key.');
+            }
+        });
+
+        document.getElementById('btnCancelApiKey').addEventListener('click', hideApiKeyDialog);
+        aiDialogOverlay.addEventListener('click', () => {
+            if (apiKeyDialog.classList.contains('show')) hideApiKeyDialog();
+            if (aiPreviewModal.classList.contains('show')) hidePreviewModal();
+        });
+
+        // AI Menu Toggle
+        function toggleAIMenu() {
+            const isShown = aiOptionsMenu.classList.contains('show');
+            aiOptionsMenu.classList.toggle('show', !isShown);
+            if (!isShown) {
+                const rect = btnAI.getBoundingClientRect();
+                aiOptionsMenu.style.top = (rect.bottom + 4) + 'px';
+                aiOptionsMenu.style.left = rect.left + 'px';
+            }
+        }
+
+        btnAI.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleAIMenu();
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!aiOptionsMenu.contains(e.target) && e.target !== btnAI) {
+                aiOptionsMenu.classList.remove('show');
+            }
+        });
+
+        // Upload Image
+        document.getElementById('btnAIUpload').addEventListener('click', () => {
+            aiOptionsMenu.classList.remove('show');
+            const apiKey = getStoredApiKey();
+            if (!apiKey) { showApiKeyDialog(); return; }
+            aiImageInput.click();
+        });
+
+        aiImageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                processImageWithAI(ev.target.result);
+            };
+            reader.readAsDataURL(file);
+            aiImageInput.value = '';
+        });
+
+        // Paste from Clipboard
+        document.getElementById('btnAIPaste').addEventListener('click', async () => {
+            aiOptionsMenu.classList.remove('show');
+            const apiKey = getStoredApiKey();
+            if (!apiKey) { showApiKeyDialog(); return; }
+            try {
+                const clipboardItems = await navigator.clipboard.read();
+                let imageFound = false;
+                for (const item of clipboardItems) {
+                    const imageType = item.types.find(t => t.startsWith('image/'));
+                    if (imageType) {
+                        const blob = await item.getType(imageType);
+                        const reader = new FileReader();
+                        reader.onload = (ev) => {
+                            processImageWithAI(ev.target.result);
+                        };
+                        reader.readAsDataURL(blob);
+                        imageFound = true;
+                        break;
+                    }
+                }
+                if (!imageFound) {
+                    alert('Tiada gambar dalam clipboard. Sila salin gambar terlebih dahulu.');
+                }
+            } catch (err) {
+                alert('Gagal membaca clipboard. Sila benarkan akses clipboard atau gunakan Upload Gambar.');
+            }
+        });
+
+        // Settings
+        document.getElementById('btnAISettings').addEventListener('click', () => {
+            aiOptionsMenu.classList.remove('show');
+            showApiKeyDialog();
+        });
+
+        // AI Prompt
+        function getAIPrompt() {
+            return `Anda adalah guru pelbagai subjek yang menyediakan nota ringkas dan terstruktur untuk pelajar sekolah rendah Malaysia (darjah 4-6).
+
+Analisis gambar buku teks ini. JANGAN salin semua teks. Buat NOTA RINGKAS berstruktur.
+
+FORMAT WAJIB:
+- ## untuk tajuk utama (SATU sahaja)
+- ### untuk sub-tajuk (bahagikan isi kepada 2-4 kumpulan)
+- istilah → maksud (untuk definisi, MAKS 5 patah perkataan selepas →)
+- 1. 2. 3. untuk fakta atau langkah
+- --- untuk pemisah antara bahagian besar (jika perlu)
+
+PERATURAN:
+- Selepas → mesti PENDEK (cth: "menentang" BUKAN "bertindak menentang sesuatu pihak lain")
+- Setiap point mesti 1 baris sahaja
+- Setiap ### ada sekurang-kurangnya 2 item
+- Maksimum 10 point keseluruhan
+- Bahasa mudah untuk pelajar
+
+CONTOH — Sejarah:
+## Pembentukan Malaysia
+
+Proses penubuhan negara Malaysia.
+
+### Tokoh Penting
+Tunku Abdul Rahman → Bapa Kemerdekaan
+Lee Kuan Yew → Perdana Menteri Singapura
+
+### Peristiwa
+1. Perjanjian Malaysia ditandatangani 1963
+2. Singapura keluar 1965
+
+CONTOH — Sains:
+## Sistem Pencernaan
+
+Proses memecahkan makanan dalam badan.
+
+### Organ Utama
+Esofagus → saluran ke perut
+Usus kecil → menyerap nutrisi
+
+### Proses Pencernaan
+1. Makanan dikunyah dalam mulut
+2. Enzim memecahkan makanan di perut
+
+CONTOH — Bahasa Melayu:
+## Kata Kerja Aktif
+
+Kata kerja yang menunjukkan perbuatan.
+
+### Transitif
+Kata kerja transitif → perlu objek
+1. Contoh: Ali menendang bola
+
+### Tak Transitif
+Kata kerja tak transitif → tanpa objek
+1. Contoh: Adik menangis
+
+Kembalikan respons dalam format JSON sahaja (tanpa markdown code block):
+{
+  "title": "Tajuk topik",
+  "content": "## Tajuk\\n\\nPenerangan.\\n\\n### Sub-tajuk\\nistilah → maksud\\n\\n### Sub-tajuk 2\\n1. Point"
+}
+
+PENTING: JSON sahaja. Nota ringkas berstruktur, BUKAN salin teks.`;
+        }
+
+        // Process Image with Gemini AI
+        async function processImageWithAI(base64DataUrl) {
+            const apiKey = getStoredApiKey();
+            if (!apiKey) { showApiKeyDialog(); return; }
+
+            aiLoading.classList.add('show');
+            aiDialogOverlay.classList.add('show');
+
+            try {
+                const mimeMatch = base64DataUrl.match(/^data:(image\/\w+);base64,/);
+                const mimeType = mimeMatch ? mimeMatch[1] : 'image/png';
+                const base64Data = base64DataUrl.replace(/^data:image\/\w+;base64,/, '');
+
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [
+                                    { text: getAIPrompt() },
+                                    { inline_data: { mime_type: mimeType, data: base64Data } }
+                                ]
+                            }]
+                        })
+                    }
+                );
+
+                if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error?.message || `Ralat API: ${response.status}`);
+                }
+
+                const result = await response.json();
+                const textContent = result.candidates?.[0]?.content?.parts?.[0]?.text;
+
+                if (!textContent) {
+                    throw new Error('Tiada respons dari AI.');
+                }
+
+                // Parse JSON from response (handle possible markdown code blocks)
+                let parsed;
+                try {
+                    const cleanJson = textContent.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+                    parsed = JSON.parse(cleanJson);
+                } catch (parseErr) {
+                    throw new Error('Format respons tidak dijangka. Sila cuba lagi.');
+                }
+
+                showPreviewModal(parsed);
+
+            } catch (err) {
+                alert('Ralat: ' + err.message);
+                aiDialogOverlay.classList.remove('show');
+            } finally {
+                aiLoading.classList.remove('show');
+            }
+        }
+
+        // Preview Modal
+        function showPreviewModal(data) {
+            aiPreviewTitle.value = data.title || '';
+            aiPreviewContent.value = data.content || '';
+            aiPreviewModal.classList.add('show');
+            aiDialogOverlay.classList.add('show');
+        }
+
+        function hidePreviewModal() {
+            aiPreviewModal.classList.remove('show');
+            aiDialogOverlay.classList.remove('show');
+        }
+
+        document.getElementById('btnCancelPreview').addEventListener('click', hidePreviewModal);
+
+        document.getElementById('btnFillNotes').addEventListener('click', () => {
+            const title = aiPreviewTitle.value.trim();
+            const content = aiPreviewContent.value.trim();
+            if (!content && !title) {
+                alert('Tiada kandungan untuk diisi.');
+                return;
+            }
+            hidePreviewModal();
+            autoFillNotebook(title, content);
+        });
+
+        document.getElementById('btnFillMindMap').addEventListener('click', () => {
+            const title = aiPreviewTitle.value.trim();
+            const content = aiPreviewContent.value.trim();
+            if (!content && !title) {
+                alert('Tiada kandungan untuk diisi.');
+                return;
+            }
+            hidePreviewModal();
+            autoFillMindMap(title, content);
+        });
+
+        // Auto-Fill Notebook
+        function autoFillNotebook(title, content) {
+            const START_Y = 0;
+            const LEFT_MARGIN = 60;
+            let currentY = START_Y;
+
+            // Helper: check page overflow and add new page if needed
+            function ensureSpace(needed) {
+                if (currentY + needed > CANVAS_HEIGHT) {
+                    savePage(currentPageIndex);
+                    pages.push(createEmptyPage());
+                    currentPageIndex = pages.length - 1;
+                    loadPage(currentPageIndex);
+                    updatePageNavigation();
+                    currentY = START_Y;
+                }
+            }
+
+            // Fill title in header if provided
+            if (title) {
+                document.getElementById('inputTajuk').value = title;
+            }
+
+            if (!content && !title) {
+                saveToLocalStorage(true);
+                return;
+            }
+
+            const lines = (content || '').split('\n');
+
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
+
+                // Empty line = spacing
+                if (line.trim() === '') {
+                    currentY += LINE_HEIGHT;
+                    continue;
+                }
+
+                // --- Separator line
+                if (line.trim() === '---') {
+                    ensureSpace(LINE_HEIGHT);
+                    createMindMapShape('line', LEFT_MARGIN, currentY + 12, 500, 1, '#d1d5db', 2, 500, 0);
+                    currentY += LINE_HEIGHT;
+                    continue;
+                }
+
+                // ## Heading (32px bold + orange underline) — must not match ###
+                if (line.match(/^## (?!#)(.+)/)) {
+                    const headingText = line.replace(/^## /, '');
+                    ensureSpace(LINE_HEIGHT * 2);
+                    createTextElementFromData({
+                        text: headingText,
+                        left: LEFT_MARGIN + 'px',
+                        top: currentY + 'px',
+                        fontSize: '32px',
+                        color: '#000',
+                        fontWeight: 'bold'
+                    });
+                    // Orange underline
+                    const lineWidth = Math.min(headingText.length * 18, 600);
+                    createMindMapShape('line', LEFT_MARGIN, currentY + 40, lineWidth, 1, '#f97316', 3, lineWidth, 0);
+                    currentY += LINE_HEIGHT * 2;
+                    continue;
+                }
+
+                // ### Sub-heading (24px bold)
+                if (line.match(/^### (.+)/)) {
+                    const subText = line.replace(/^### /, '');
+                    ensureSpace(LINE_HEIGHT + 10);
+                    currentY += 10; // extra spacing before sub-heading
+                    createTextElementFromData({
+                        text: subText,
+                        left: LEFT_MARGIN + 'px',
+                        top: currentY + 'px',
+                        fontSize: '24px',
+                        color: '#1e293b',
+                        fontWeight: 'bold'
+                    });
+                    currentY += LINE_HEIGHT + 6;
+                    continue;
+                }
+
+                // Definition: term → meaning (two-line layout)
+                if (line.includes('→')) {
+                    const parts = line.split('→');
+                    const term = parts[0].trim();
+                    const meaning = parts.slice(1).join('→').trim();
+                    ensureSpace(LINE_HEIGHT * 2);
+
+                    // Line 1: Bold term
+                    createTextElementFromData({
+                        text: term,
+                        left: LEFT_MARGIN + 'px',
+                        top: currentY + 'px',
+                        fontSize: '20px',
+                        color: '#000',
+                        fontWeight: 'bold'
+                    });
+                    currentY += LINE_HEIGHT;
+
+                    // Line 2: Arrow + meaning (indented)
+                    const indentX = LEFT_MARGIN + 20;
+                    createMindMapShape('arrow', indentX, currentY + 10, 40, 1, '#f97316', 2, 40, 0);
+                    createTextElementFromData({
+                        text: meaning,
+                        left: (indentX + 50) + 'px',
+                        top: currentY + 'px',
+                        fontSize: '18px',
+                        color: '#374151',
+                        fontWeight: 'normal'
+                    });
+
+                    currentY += LINE_HEIGHT;
+                    continue;
+                }
+
+                // Normal text (numbered points or plain text)
+                ensureSpace(LINE_HEIGHT);
+                createTextElementFromData({
+                    text: line,
+                    left: LEFT_MARGIN + 'px',
+                    top: currentY + 'px',
+                    fontSize: '20px',
+                    color: '#000',
+                    fontWeight: 'normal'
+                });
+
+                currentY += LINE_HEIGHT;
+            }
+
+            saveToLocalStorage(true);
+            selectTool('cursor');
+        }
+
+        // Helper: Create a mind map shape element (based on loadShapesForPage pattern)
+        function createMindMapShape(type, x, y, w, h, color, sw, origW, origH) {
+            const container = document.createElement('div');
+            container.className = 'shape-element';
+            container.dataset.shapeType = type;
+            container.dataset.color = color;
+            container.dataset.strokeWidth = sw;
+            container.style.left = x + 'px';
+            container.style.top = y + 'px';
+            container.style.width = w + 'px';
+            container.style.height = h + 'px';
+            container.dataset.rotation = 0;
+            container.dataset.flipH = false;
+            container.dataset.flipV = false;
+            if (origW !== undefined) container.dataset.origWidth = origW;
+            if (origH !== undefined) container.dataset.origHeight = origH;
+
+            container.innerHTML = generateShapeSVG(type, w, h, color, sw, false, origW, origH);
+
+            const deleteBtn = document.createElement('div');
+            deleteBtn.className = 'delete-btn';
+            deleteBtn.innerHTML = '✕';
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                container.remove();
+                selectedShape = null;
+                hideShapeToolbar();
+                saveToLocalStorage();
+            });
+            container.appendChild(deleteBtn);
+
+            setupShapeElement(container);
+            shapeLayer.appendChild(container);
+            return container;
+        }
+
+        // Auto-Fill Mind Map
+        function autoFillMindMap(title, content) {
+            const nodeColors = [
+                '#3b82f6', '#10b981', '#f59e0b', '#ef4444',
+                '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'
+            ];
+
+            const centerX = CANVAS_WIDTH / 2;
+            const centerY = CANVAS_HEIGHT / 2;
+
+            // 1. Create center node (ellipse)
+            const centerW = 260, centerH = 70;
+            createMindMapShape('ellipse', centerX - centerW / 2, centerY - centerH / 2, centerW, centerH, '#ec4899', 3);
+
+            // Center title text
+            const displayTitle = title || 'Peta Minda';
+            createTextElementFromData({
+                text: displayTitle,
+                left: (centerX - centerW / 2 + 10) + 'px',
+                top: (centerY - 14) + 'px',
+                fontSize: '22px',
+                color: '#000',
+                fontWeight: 'bold',
+                width: (centerW - 20) + 'px',
+                textAlign: 'center'
+            });
+
+            // 2. Parse points from content (strip markdown markers)
+            if (!content) {
+                saveToLocalStorage(true);
+                selectTool('cursor');
+                return;
+            }
+
+            const cleanContent = content
+                .replace(/^##+ /gm, '')
+                .replace(/^---$/gm, '')
+                .trim();
+            const points = cleanContent.split('\n').filter(l => l.trim() !== '');
+            const N = points.length;
+            if (N === 0) {
+                saveToLocalStorage(true);
+                selectTool('cursor');
+                return;
+            }
+
+            // 3. Calculate radial positions
+            const radiusX = CANVAS_WIDTH * 0.33;
+            const radiusY = CANVAS_HEIGHT * 0.33;
+
+            for (let i = 0; i < N; i++) {
+                const angle = (2 * Math.PI * i / N) - Math.PI / 2;
+                const nodeX = centerX + radiusX * Math.cos(angle);
+                const nodeY = centerY + radiusY * Math.sin(angle);
+
+                // Node dimensions based on text length
+                const text = points[i].replace(/^\d+[\.\)]\s*/, '').trim();
+                const nodeW = Math.min(280, Math.max(160, text.length * 9));
+                const nodeH = 50;
+
+                // a) Line from center to branch node
+                const lineX = Math.min(centerX, nodeX);
+                const lineY = Math.min(centerY, nodeY);
+                const lineW = Math.abs(nodeX - centerX) || 1;
+                const lineH = Math.abs(nodeY - centerY) || 1;
+                const origW = nodeX - centerX;
+                const origH = nodeY - centerY;
+                createMindMapShape('line', lineX, lineY, lineW, lineH, '#9ca3af', 2, origW, origH);
+
+                // b) Rectangle branch node
+                const color = nodeColors[i % nodeColors.length];
+                createMindMapShape('rectangle', nodeX - nodeW / 2, nodeY - nodeH / 2, nodeW, nodeH, color, 2);
+
+                // c) Text inside branch node
+                createTextElementFromData({
+                    text: text,
+                    left: (nodeX - nodeW / 2 + 8) + 'px',
+                    top: (nodeY - 10) + 'px',
+                    fontSize: '14px',
+                    color: '#000',
+                    fontWeight: 'normal',
+                    width: (nodeW - 16) + 'px',
+                    textAlign: 'center'
+                });
+            }
+
+            saveToLocalStorage(true);
+            selectTool('cursor');
+        }
 
         // ==================== INITIALIZATION ====================
         window.addEventListener('load', () => {
