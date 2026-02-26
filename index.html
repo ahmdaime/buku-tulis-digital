@@ -2570,7 +2570,7 @@
                 dragHandle.className = 'drag-handle';
                 container.appendChild(dragHandle);
 
-                container.innerHTML += data.html;
+                container.innerHTML += sanitizeTableHTML(data.html);
                 addTableDeleteButton(container);
                 setupTableElement(container);
                 setupTableCells(container);
@@ -2752,7 +2752,7 @@
                 el.spellcheck = false; // Disable spellcheck
                 // Use HTML if available (rich text), fallback to text
                 if (clipboard.data.html) {
-                    el.innerHTML = clipboard.data.html;
+                    el.innerHTML = sanitizeHTML(clipboard.data.html);
                 } else {
                     el.textContent = clipboard.data.text;
                 }
@@ -2798,7 +2798,7 @@
                 dragHandle.className = 'drag-handle';
                 container.appendChild(dragHandle);
 
-                container.innerHTML += clipboard.data.html;
+                container.innerHTML += sanitizeTableHTML(clipboard.data.html);
                 addTableDeleteButton(container);
                 setupTableElement(container);
                 setupTableCells(container);
@@ -2934,7 +2934,7 @@
                     el.spellcheck = false; // Disable spellcheck
                     // Use HTML if available (rich text), fallback to text
                     if (item.html) {
-                        el.innerHTML = item.html;
+                        el.innerHTML = sanitizeHTML(item.html);
                     } else {
                         el.textContent = item.text;
                     }
@@ -2980,7 +2980,7 @@
                     const dragHandle = document.createElement('div');
                     dragHandle.className = 'drag-handle';
                     container.appendChild(dragHandle);
-                    container.innerHTML += item.html;
+                    container.innerHTML += sanitizeTableHTML(item.html);
                     addTableDeleteButton(container);
                     setupTableElement(container);
                     setupTableCells(container);
@@ -3144,7 +3144,7 @@
             let startX, startY, initialX, initialY;
             let multiSelectPositions = [];
 
-            container.addEventListener('mousedown', (e) => {
+            function beginDrag(e) {
                 if (e.target.classList.contains('resize-handle') || e.target.classList.contains('delete-btn')) return;
 
                 // Switch to image mode when clicking on image (except in cursor mode)
@@ -3154,8 +3154,9 @@
 
                 isDragging = true;
                 hasMoved = false;
-                startX = e.clientX;
-                startY = e.clientY;
+                const pt = getPointerXY(e);
+                startX = pt.x;
+                startY = pt.y;
                 initialX = parseInt(container.style.left) || 0;
                 initialY = parseInt(container.style.top) || 0;
                 container.style.zIndex = '100';
@@ -3171,7 +3172,10 @@
 
                 e.preventDefault();
                 e.stopPropagation();
-            });
+            }
+
+            container.addEventListener('mousedown', beginDrag);
+            container.addEventListener('touchstart', beginDrag, { passive: false });
 
             container.addEventListener('click', (e) => {
                 if (!hasMoved && (currentTool === 'image' || currentTool === 'cursor')) {
@@ -3190,10 +3194,12 @@
                 }
             });
 
-            const onMouseMove = (e) => {
+            const onMove = (e) => {
                 if (!isDragging) return;
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
+                if (e.touches && e.touches.length > 1) return;
+                const pt = getPointerXY(e);
+                const dx = pt.x - startX;
+                const dy = pt.y - startY;
                 if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
 
                 // Move all multi-selected elements together
@@ -3206,9 +3212,10 @@
                     container.style.left = (initialX + dx) + 'px';
                     container.style.top = (initialY + dy) + 'px';
                 }
+                if (e.cancelable) e.preventDefault();
             };
 
-            const onMouseUp = () => {
+            const onEnd = () => {
                 if (isDragging) {
                     isDragging = false;
                     container.style.zIndex = '';
@@ -3221,14 +3228,18 @@
                 }
             };
 
-            container.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
+            container.addEventListener('mousemove', onMove);
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onEnd);
+            document.addEventListener('touchmove', onMove, { passive: false });
+            document.addEventListener('touchend', onEnd);
 
             // Store cleanup function for removing listeners when element is deleted
             container._cleanupListeners = () => {
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onEnd);
+                document.removeEventListener('touchmove', onMove);
+                document.removeEventListener('touchend', onEnd);
             };
         }
 
@@ -3275,24 +3286,30 @@
             let isResizing = false;
             let startX, startY, startWidth, startHeight, startLeft, startTop;
 
-            handle.addEventListener('mousedown', (e) => {
+            function beginResize(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 isResizing = true;
-                startX = e.clientX;
-                startY = e.clientY;
+                const pt = getPointerXY(e);
+                startX = pt.x;
+                startY = pt.y;
                 startWidth = parseInt(container.style.width) || 200;
                 startHeight = parseInt(container.style.height) || 150;
                 startLeft = parseInt(container.style.left) || 0;
                 startTop = parseInt(container.style.top) || 0;
                 document.body.style.cursor = handle.style.cursor;
-            });
+            }
+
+            handle.addEventListener('mousedown', beginResize);
+            handle.addEventListener('touchstart', beginResize, { passive: false });
 
             const onResizeMove = (e) => {
                 if (!isResizing) return;
+                if (e.touches && e.touches.length > 1) return;
 
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
+                const pt = getPointerXY(e);
+                const dx = pt.x - startX;
+                const dy = pt.y - startY;
                 const pos = handle.dataset.position;
 
                 let newWidth = startWidth;
@@ -3322,6 +3339,7 @@
                 container.style.height = newHeight + 'px';
                 container.style.left = newLeft + 'px';
                 container.style.top = newTop + 'px';
+                if (e.cancelable) e.preventDefault();
             };
 
             const onResizeUp = () => {
@@ -3334,11 +3352,15 @@
 
             document.addEventListener('mousemove', onResizeMove);
             document.addEventListener('mouseup', onResizeUp);
+            document.addEventListener('touchmove', onResizeMove, { passive: false });
+            document.addEventListener('touchend', onResizeUp);
 
             // Store cleanup for when resize handles are removed
             handle._cleanupListeners = () => {
                 document.removeEventListener('mousemove', onResizeMove);
                 document.removeEventListener('mouseup', onResizeUp);
+                document.removeEventListener('touchmove', onResizeMove);
+                document.removeEventListener('touchend', onResizeUp);
             };
         }
 
@@ -3612,7 +3634,7 @@
             let startX, startY, initialX, initialY;
             let multiSelectPositions = [];
 
-            container.addEventListener('mousedown', (e) => {
+            function beginDrag(e) {
                 if (e.target.classList.contains('resize-handle') || e.target.classList.contains('delete-btn')) return;
 
                 // Switch to shape mode (except in cursor mode)
@@ -3622,8 +3644,9 @@
 
                 isDragging = true;
                 hasMoved = false;
-                startX = e.clientX;
-                startY = e.clientY;
+                const pt = getPointerXY(e);
+                startX = pt.x;
+                startY = pt.y;
                 initialX = parseInt(container.style.left) || 0;
                 initialY = parseInt(container.style.top) || 0;
                 container.style.zIndex = '100';
@@ -3639,7 +3662,10 @@
 
                 e.preventDefault();
                 e.stopPropagation();
-            });
+            }
+
+            container.addEventListener('mousedown', beginDrag);
+            container.addEventListener('touchstart', beginDrag, { passive: false });
 
             container.addEventListener('click', (e) => {
                 if (!hasMoved && (currentTool === 'shape' || currentTool === 'cursor')) {
@@ -3658,10 +3684,12 @@
                 }
             });
 
-            const onMouseMove = (e) => {
+            const onMove = (e) => {
                 if (!isDragging) return;
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
+                if (e.touches && e.touches.length > 1) return;
+                const pt = getPointerXY(e);
+                const dx = pt.x - startX;
+                const dy = pt.y - startY;
                 if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
 
                 // Move all multi-selected elements together
@@ -3675,9 +3703,10 @@
                     container.style.top = (initialY + dy) + 'px';
                 }
                 if (selectedShape === container) updateShapeToolbarPosition();
+                if (e.cancelable) e.preventDefault();
             };
 
-            const onMouseUp = () => {
+            const onEnd = () => {
                 if (isDragging) {
                     isDragging = false;
                     container.style.zIndex = '';
@@ -3690,14 +3719,18 @@
                 }
             };
 
-            container.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
+            container.addEventListener('mousemove', onMove);
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onEnd);
+            document.addEventListener('touchmove', onMove, { passive: false });
+            document.addEventListener('touchend', onEnd);
 
             // Store cleanup function for removing listeners when element is deleted
             container._cleanupListeners = () => {
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onEnd);
+                document.removeEventListener('touchmove', onMove);
+                document.removeEventListener('touchend', onEnd);
             };
         }
 
@@ -3747,24 +3780,30 @@
             let isResizing = false;
             let startX, startY, startWidth, startHeight, startLeft, startTop;
 
-            handle.addEventListener('mousedown', (e) => {
+            function beginResize(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 isResizing = true;
-                startX = e.clientX;
-                startY = e.clientY;
+                const pt = getPointerXY(e);
+                startX = pt.x;
+                startY = pt.y;
                 startWidth = parseInt(container.style.width) || 100;
                 startHeight = parseInt(container.style.height) || 100;
                 startLeft = parseInt(container.style.left) || 0;
                 startTop = parseInt(container.style.top) || 0;
                 document.body.style.cursor = handle.style.cursor;
-            });
+            }
+
+            handle.addEventListener('mousedown', beginResize);
+            handle.addEventListener('touchstart', beginResize, { passive: false });
 
             const onResizeMove = (e) => {
                 if (!isResizing) return;
+                if (e.touches && e.touches.length > 1) return;
 
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
+                const pt = getPointerXY(e);
+                const dx = pt.x - startX;
+                const dy = pt.y - startY;
                 const pos = handle.dataset.position;
 
                 let newWidth = startWidth;
@@ -3809,6 +3848,7 @@
                 handles.forEach(h => container.appendChild(h));
 
                 updateShapeToolbarPosition();
+                if (e.cancelable) e.preventDefault();
             };
 
             const onResizeUp = () => {
@@ -3821,11 +3861,15 @@
 
             document.addEventListener('mousemove', onResizeMove);
             document.addEventListener('mouseup', onResizeUp);
+            document.addEventListener('touchmove', onResizeMove, { passive: false });
+            document.addEventListener('touchend', onResizeUp);
 
             // Store cleanup for when resize handles are removed
             handle._cleanupListeners = () => {
                 document.removeEventListener('mousemove', onResizeMove);
                 document.removeEventListener('mouseup', onResizeUp);
+                document.removeEventListener('touchmove', onResizeMove);
+                document.removeEventListener('touchend', onResizeUp);
             };
         }
 
@@ -4384,33 +4428,37 @@
 
             const dragHandle = container.querySelector('.drag-handle');
 
+            function beginDrag(e) {
+                // Switch to table mode (except in cursor mode)
+                if (currentTool !== 'table' && currentTool !== 'cursor') selectTool('table');
+                if (!e.shiftKey) selectTable(container);
+
+                isDragging = true;
+                hasMoved = false;
+                const pt = getPointerXY(e);
+                startX = pt.x;
+                startY = pt.y;
+                initialX = parseInt(container.style.left) || 0;
+                initialY = parseInt(container.style.top) || 0;
+                container.style.zIndex = '200';
+
+                // Store initial positions for multi-selected elements
+                if (isInMultiSelect(container)) {
+                    multiSelectPositions = multiSelectedElements.map(el => ({
+                        el: el,
+                        left: parseInt(el.style.left) || 0,
+                        top: parseInt(el.style.top) || 0
+                    }));
+                }
+
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
             // Drag from handle
             if (dragHandle) {
-                dragHandle.addEventListener('mousedown', (e) => {
-                    // Switch to table mode (except in cursor mode)
-                    if (currentTool !== 'table' && currentTool !== 'cursor') selectTool('table');
-                    if (!e.shiftKey) selectTable(container);
-
-                    isDragging = true;
-                    hasMoved = false;
-                    startX = e.clientX;
-                    startY = e.clientY;
-                    initialX = parseInt(container.style.left) || 0;
-                    initialY = parseInt(container.style.top) || 0;
-                    container.style.zIndex = '200';
-
-                    // Store initial positions for multi-selected elements
-                    if (isInMultiSelect(container)) {
-                        multiSelectPositions = multiSelectedElements.map(el => ({
-                            el: el,
-                            left: parseInt(el.style.left) || 0,
-                            top: parseInt(el.style.top) || 0
-                        }));
-                    }
-
-                    e.preventDefault();
-                    e.stopPropagation();
-                });
+                dragHandle.addEventListener('mousedown', beginDrag);
+                dragHandle.addEventListener('touchstart', beginDrag, { passive: false });
             }
 
             // Click on container (not on TD) to select
@@ -4443,10 +4491,12 @@
                 }
             });
 
-            const onMouseMove = (e) => {
+            const onMove = (e) => {
                 if (!isDragging) return;
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
+                if (e.touches && e.touches.length > 1) return;
+                const pt = getPointerXY(e);
+                const dx = pt.x - startX;
+                const dy = pt.y - startY;
                 if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
 
                 // Move all multi-selected elements together
@@ -4460,9 +4510,10 @@
                     container.style.top = (initialY + dy) + 'px';
                 }
                 if (selectedTable === container) updateTableToolbarPosition();
+                if (e.cancelable) e.preventDefault();
             };
 
-            const onMouseUp = () => {
+            const onEnd = () => {
                 if (isDragging) {
                     isDragging = false;
                     container.style.zIndex = '';
@@ -4475,13 +4526,17 @@
                 }
             };
 
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onEnd);
+            document.addEventListener('touchmove', onMove, { passive: false });
+            document.addEventListener('touchend', onEnd);
 
             // Store cleanup function for removing listeners when element is deleted
             container._cleanupListeners = () => {
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onEnd);
+                document.removeEventListener('touchmove', onMove);
+                document.removeEventListener('touchend', onEnd);
             };
         }
 
@@ -4543,25 +4598,31 @@
             let isResizing = false;
             let startX, startY, startWidth, startHeight, startLeft, startTop;
 
-            handle.addEventListener('mousedown', (e) => {
+            function beginResize(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 isResizing = true;
-                startX = e.clientX;
-                startY = e.clientY;
+                const pt = getPointerXY(e);
+                startX = pt.x;
+                startY = pt.y;
                 const rect = container.getBoundingClientRect();
-                startWidth = rect.width;
-                startHeight = rect.height;
+                startWidth = rect.width / currentZoom;
+                startHeight = rect.height / currentZoom;
                 startLeft = parseInt(container.style.left) || 0;
                 startTop = parseInt(container.style.top) || 0;
                 document.body.style.cursor = handle.style.cursor;
-            });
+            }
+
+            handle.addEventListener('mousedown', beginResize);
+            handle.addEventListener('touchstart', beginResize, { passive: false });
 
             const onResizeMove = (e) => {
                 if (!isResizing) return;
+                if (e.touches && e.touches.length > 1) return;
 
-                const dx = e.clientX - startX;
-                const dy = e.clientY - startY;
+                const pt = getPointerXY(e);
+                const dx = pt.x - startX;
+                const dy = pt.y - startY;
                 const pos = handle.dataset.position;
 
                 let newWidth = startWidth;
@@ -4592,6 +4653,7 @@
                 container.style.left = newLeft + 'px';
                 container.style.top = newTop + 'px';
                 updateTableToolbarPosition();
+                if (e.cancelable) e.preventDefault();
             };
 
             const onResizeUp = () => {
@@ -4604,11 +4666,15 @@
 
             document.addEventListener('mousemove', onResizeMove);
             document.addEventListener('mouseup', onResizeUp);
+            document.addEventListener('touchmove', onResizeMove, { passive: false });
+            document.addEventListener('touchend', onResizeUp);
 
             // Store cleanup for when resize handles are removed
             handle._cleanupListeners = () => {
                 document.removeEventListener('mousemove', onResizeMove);
                 document.removeEventListener('mouseup', onResizeUp);
+                document.removeEventListener('touchmove', onResizeMove);
+                document.removeEventListener('touchend', onResizeUp);
             };
         }
 
@@ -5398,7 +5464,7 @@
                         } else {
                             // Remove dangerous attributes
                             Array.from(child.attributes).forEach(attr => {
-                                if (attr.name.startsWith('on') || attr.name === 'href' || attr.name === 'src') {
+                                if (attr.name.startsWith('on') || attr.name === 'href' || attr.name === 'src' || attr.name === 'style') {
                                     child.removeAttribute(attr.name);
                                 }
                             });
@@ -5408,6 +5474,22 @@
                 });
             }
             clean(temp);
+            return temp.innerHTML;
+        }
+
+        function sanitizeTableHTML(html) {
+            const temp = document.createElement('div');
+            temp.innerHTML = html;
+            // Remove script/iframe/object/embed elements entirely
+            temp.querySelectorAll('script, iframe, object, embed, link').forEach(el => el.remove());
+            // Strip dangerous attributes from all elements but keep table structure
+            temp.querySelectorAll('*').forEach(el => {
+                Array.from(el.attributes).forEach(attr => {
+                    if (attr.name.startsWith('on') || attr.name === 'href' || attr.name === 'src' || attr.name === 'style') {
+                        el.removeAttribute(attr.name);
+                    }
+                });
+            });
             return temp.innerHTML;
         }
 
@@ -5430,6 +5512,11 @@
             el.style.textDecoration = data.textDecoration || 'none';
             setupTextElement(el);
             textLayer.appendChild(el);
+        }
+
+        function getPointerXY(e) {
+            const raw = e.touches ? e.touches[0] : e;
+            return { x: raw.clientX / currentZoom, y: raw.clientY / currentZoom };
         }
 
         function setupTextElement(element) {
@@ -5460,15 +5547,16 @@
                 editTextElement(element);
             });
 
-            element.addEventListener('mousedown', (e) => {
-                if (e.detail >= 2) return;
+            function beginDrag(e) {
+                if (e.type === 'mousedown' && e.detail >= 2) return;
                 // Don't drag when in editing mode - allow text selection instead
                 if (element.classList.contains('editing')) return;
 
                 isDragging = true;
                 hasMoved = false;
-                startX = e.clientX;
-                startY = e.clientY;
+                const pt = getPointerXY(e);
+                startX = pt.x;
+                startY = pt.y;
                 initialX = parseInt(element.style.left) || 0;
                 initialY = parseInt(element.style.top) || 0;
                 element.style.cursor = 'grabbing';
@@ -5484,11 +5572,16 @@
                 }
 
                 e.preventDefault();
-            });
+            }
 
-            const onMouseMove = (e) => {
+            element.addEventListener('mousedown', beginDrag);
+            element.addEventListener('touchstart', beginDrag, { passive: false });
+
+            const onMove = (e) => {
                 if (!isDragging) return;
-                const dx = e.clientX - startX, dy = e.clientY - startY;
+                if (e.touches && e.touches.length > 1) return;
+                const pt = getPointerXY(e);
+                const dx = pt.x - startX, dy = pt.y - startY;
                 if (Math.abs(dx) > 3 || Math.abs(dy) > 3) hasMoved = true;
 
                 // Move all multi-selected elements together
@@ -5502,9 +5595,10 @@
                     element.style.top = (initialY + dy) + 'px';
                 }
                 if (selectedTextElement === element) updateTextToolbarPosition();
+                if (e.cancelable) e.preventDefault();
             };
 
-            const onMouseUp = () => {
+            const onEnd = () => {
                 if (isDragging) {
                     isDragging = false;
                     element.style.cursor = 'move';
@@ -5518,13 +5612,17 @@
                 }
             };
 
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('mouseup', onEnd);
+            document.addEventListener('touchmove', onMove, { passive: false });
+            document.addEventListener('touchend', onEnd);
 
             // Store cleanup function for removing listeners when element is deleted
             element._cleanupListeners = () => {
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
+                document.removeEventListener('mousemove', onMove);
+                document.removeEventListener('mouseup', onEnd);
+                document.removeEventListener('touchmove', onMove);
+                document.removeEventListener('touchend', onEnd);
             };
         }
 
@@ -5573,20 +5671,26 @@
         function setupResizeHandle(handle, textElement) {
             let isResizing = false, startX, startY, startFontSize;
 
-            handle.addEventListener('mousedown', (e) => {
+            function beginResize(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 isResizing = true;
-                startX = e.clientX;
-                startY = e.clientY;
+                const pt = getPointerXY(e);
+                startX = pt.x;
+                startY = pt.y;
                 startFontSize = parseInt(textElement.style.fontSize) || 24;
                 document.body.style.cursor = handle.style.cursor;
-            });
+            }
+
+            handle.addEventListener('mousedown', beginResize);
+            handle.addEventListener('touchstart', beginResize, { passive: false });
 
             const onResizeMove = (e) => {
                 if (!isResizing) return;
+                if (e.touches && e.touches.length > 1) return;
+                const pt = getPointerXY(e);
                 const pos = handle.dataset.position;
-                let dx = e.clientX - startX, dy = e.clientY - startY;
+                let dx = pt.x - startX, dy = pt.y - startY;
                 let sizeDelta = 0;
                 if (pos === 'se') sizeDelta = (dx + dy) / 4;
                 else if (pos === 'sw') sizeDelta = (-dx + dy) / 4;
@@ -5597,6 +5701,7 @@
                 textElement.style.fontSize = newSize + 'px';
                 document.getElementById('fontSizeInput').value = newSize;
                 updateTextToolbarPosition();
+                if (e.cancelable) e.preventDefault();
             };
 
             const onResizeUp = () => {
@@ -5609,11 +5714,15 @@
 
             document.addEventListener('mousemove', onResizeMove);
             document.addEventListener('mouseup', onResizeUp);
+            document.addEventListener('touchmove', onResizeMove, { passive: false });
+            document.addEventListener('touchend', onResizeUp);
 
             // Store cleanup for when resize handles are removed
             handle._cleanupListeners = () => {
                 document.removeEventListener('mousemove', onResizeMove);
                 document.removeEventListener('mouseup', onResizeUp);
+                document.removeEventListener('touchmove', onResizeMove);
+                document.removeEventListener('touchend', onResizeUp);
             };
         }
 
