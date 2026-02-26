@@ -107,8 +107,9 @@ Helper `ensureSpace(needed)` — semak overflow halaman dan tambah halaman baru 
 
 ## Prestasi
 - Canvas data disimpan sebagai JPEG (0.7 quality) — ~70% lebih kecil
-- Dirty flag (`isDirty`) untuk autosave — skip jika tiada perubahan
+- Dirty flag (`isDirty`) untuk autosave — skip jika tiada perubahan pada canvas, text, shape, image, dan table layers
 - DocumentFragment untuk batch insert dalam `loadPage()`
+- Event listener cleanup pattern: setiap elemen simpan `_cleanupListeners()` untuk buang document-level listeners bila elemen dipadam
 
 ## UI/UX
 - Toast notification system (slide-in dari kanan, auto-dismiss 3s, 4 jenis: success/error/warning/info)
@@ -126,9 +127,38 @@ Helper `ensureSpace(needed)` — semak overflow halaman dan tambah halaman baru 
 - Print stylesheet: sembunyikan toolbar, skala ke A4, `page-break-after: always`
 
 ## Export
-- PNG: `Ctrl+S` — save halaman semasa
-- PDF: jsPDF, loop semua halaman, render ke canvas, simpan sebagai `{tajuk}_{tarikh}.pdf`
+- PNG: `Ctrl+S` — save halaman semasa (2x scale, semua layers: canvas, images, shapes, tables, text)
+- PDF: jsPDF, loop semua halaman, render semua layers (canvas + images + shapes + tables + text) ke canvas, simpan sebagai `{tajuk}_{tarikh}.pdf`
 - JSON: export/import backup penuh notebook (termasuk settings, pages, canvas data)
+
+---
+
+## Fungsi Jadual Penting
+- `createTableCell(container, cellData, r, c)` — cipta satu sel baru dengan semua event listeners
+- `setupTableCells(container)` — re-attach semua event listeners pada sel jadual selepas undo/paste/restore. Pasang: focus, blur, keydown (Enter/Tab navigasi), selectstart, mousedown (Shift/Ctrl+Click selection)
+- `btnAddRow` / `btnAddCol` — tambah baris/lajur, kemudian panggil `setupTableCells()` untuk pasang listeners pada sel baru
+
+## Event Listener Cleanup Pattern
+Setiap setup function simpan cleanup callback pada elemen:
+- `element._cleanupListeners()` — buang document-level mousemove/mouseup listeners
+- `handle._cleanupListeners()` — buang resize handle listeners
+- **WAJIB** panggil cleanup sebelum `.remove()` elemen atau resize handle
+- `remove*ResizeHandles()` functions auto-panggil `handle._cleanupListeners()`
+- Delete handlers (butang delete + kekunci Delete/Backspace) panggil cleanup + removeResizeHandles sebelum remove
+
+Fungsi yang ada cleanup:
+- `setupTextElement`, `setupShapeElement`, `setupImageElement`, `setupTableElement`
+- `setupResizeHandle`, `setupImageResizeHandle`, `setupShapeResizeHandle`, `setupTableResizeHandle`
+
+---
+
+## Deployment
+- **Platform**: Cloudflare Pages
+- **URL Production**: https://buku-tulis-digital.pages.dev
+- **Project name**: `buku-tulis-digital`
+- **Deploy command**: `npx wrangler pages deploy . --project-name buku-tulis-digital --branch main --commit-dirty=true`
+- Auto-deploy: tidak (manual via wrangler CLI)
+- Tiada build step — deploy folder root terus
 
 ---
 
@@ -140,3 +170,7 @@ Helper `ensureSpace(needed)` — semak overflow halaman dan tambah halaman baru 
 - Guna `showToast()` bukan `alert()` untuk semua notifikasi
 - Semua HTML dari user input mesti melalui `sanitizeHTML()` sebelum dimasukkan ke DOM
 - Prompt AI mesti sentiasa sertakan contoh dan format JSON output
+- **WAJIB** panggil `_cleanupListeners()` sebelum remove elemen dari DOM
+- **WAJIB** panggil `setupTableCells(container)` selepas restore/paste jadual dari undo/clipboard
+- Butang destructive (reset, delete) **WAJIB** ada `confirm()` dialog
+- Semua layers (canvas, text, shape, image, table) **WAJIB** trigger `markDirty()` untuk autosave
