@@ -1906,7 +1906,7 @@
     <button class="fullscreen-exit-btn" id="btnExitFullscreen">✕ Keluar Skrin Penuh (ESC)</button>
 
     <!-- Toast container -->
-    <div class="toast-container" id="toastContainer"></div>
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
     <!-- Hidden file input for images -->
     <input type="file" id="imageInput" accept="image/*">
@@ -2086,6 +2086,14 @@
             <li><strong>Zum:</strong> Butang +/−/⟲ atau cubit pada skrin sentuh</li>
             <li><strong>Auto-simpan:</strong> Data disimpan automatik setiap 30 saat</li>
         </ul>
+    </div>
+
+    <div style="text-align:center; margin: 15px 0 10px; font-size: 13px; color: #888;">
+        Dibina oleh <strong>Cikgu Aime</strong> untuk guru-guru Malaysia
+        <span style="margin: 0 8px;">|</span>
+        <a href="https://buymeacoffee.com/cikguaime" target="_blank" rel="noopener noreferrer" style="color: #ff813f; text-decoration: none; font-weight: 600;">
+            ☕ Belanja saya kopi
+        </a>
     </div>
 
     <script>
@@ -2417,6 +2425,9 @@
                 }
             } catch(e) {
                 console.error('Save error:', e);
+                if (e.name === 'QuotaExceededError' || e.code === 22) {
+                    showToast('Storan penuh! Sila Export JSON sebagai backup, kemudian padam halaman lama.', 'error');
+                }
             }
         }
 
@@ -5050,6 +5061,8 @@
             selectedTextElement = null;
             selectedShape = null;
             selectedTable = null;
+            selectedImage = null;
+            clearMultiSelect();
             saveToLocalStorage(true); // Save with history for new/clear all
         });
 
@@ -6168,8 +6181,27 @@
                     break;
                 case 'delete':
                 case 'backspace':
+                    // Delete all multi-selected elements
+                    if (multiSelectedElements.length > 0 && currentTool === 'cursor') {
+                        e.preventDefault();
+                        multiSelectedElements.forEach(el => {
+                            if (el._cleanupListeners) el._cleanupListeners();
+                            el.querySelectorAll('.resize-handle').forEach(h => {
+                                if (h._cleanupListeners) h._cleanupListeners();
+                            });
+                            el.remove();
+                        });
+                        multiSelectedElements = [];
+                        selectedTextElement = null;
+                        selectedShape = null;
+                        selectedTable = null;
+                        selectedImage = null;
+                        hideTextToolbar();
+                        hideShapeToolbar();
+                        hideTableToolbar();
+                        saveToLocalStorage(true);
                     // Allow delete in cursor mode or in the specific tool mode
-                    if (selectedTextElement && (currentTool === 'text' || currentTool === 'cursor')) {
+                    } else if (selectedTextElement && (currentTool === 'text' || currentTool === 'cursor')) {
                         e.preventDefault();
                         if (selectedTextElement._cleanupListeners) selectedTextElement._cleanupListeners();
                         removeResizeHandles(selectedTextElement);
@@ -7136,6 +7168,14 @@ PENTING: JSON sahaja. Nota belajar berkualiti, BUKAN salin teks mentah. Setiap b
                         rCtx.moveTo(0, y);
                         rCtx.lineTo(CANVAS_WIDTH, y);
                         rCtx.stroke();
+                        if (tmpl === '4suku') {
+                            rCtx.setLineDash([5, 5]);
+                            rCtx.beginPath();
+                            rCtx.moveTo(0, y - LINE_HEIGHT/2);
+                            rCtx.lineTo(CANVAS_WIDTH, y - LINE_HEIGHT/2);
+                            rCtx.stroke();
+                            rCtx.setLineDash([]);
+                        }
                     }
                 } else if (tmpl === 'grid') {
                     for (let y = contentTop + LINE_HEIGHT; y < totalHeight; y += LINE_HEIGHT) {
@@ -7387,7 +7427,6 @@ PENTING: JSON sahaja. Nota belajar berkualiti, BUKAN salin teks mentah. Setiap b
                 updateUndoRedoButtons();
             }, 500);
 
-            console.log('Buku Tulis Digital dimuatkan!');
         });
 
         window.addEventListener('beforeunload', () => saveToLocalStorage());
