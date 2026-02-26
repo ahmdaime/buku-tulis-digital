@@ -104,6 +104,7 @@ Helper `ensureSpace(needed)` — semak overflow halaman dan tambah halaman baru 
 - Validasi saiz halaman: min 100px, maks 5000px
 - Validasi jadual: baris 1-50, lajur 1-20
 - Amaran merah dalam dialog API key tentang penyimpanan localStorage
+- `QuotaExceededError` ditangkap dan tunjuk toast amaran merah kepada pengguna
 
 ## Prestasi
 - Canvas data disimpan sebagai JPEG (0.7 quality) — ~70% lebih kecil
@@ -112,13 +113,15 @@ Helper `ensureSpace(needed)` — semak overflow halaman dan tambah halaman baru 
 - Event listener cleanup pattern: setiap elemen simpan `_cleanupListeners()` untuk buang document-level listeners bila elemen dipadam
 
 ## UI/UX
-- Toast notification system (slide-in dari kanan, auto-dismiss 3s, 4 jenis: success/error/warning/info)
+- Toast notification system (slide-in dari kanan, auto-dismiss 3s, 4 jenis: success/error/warning/info, `aria-live="polite"`)
 - Undo/Redo butang dalam toolbar dengan disabled state
 - Mode indicator dengan ikon dan animasi pulse
 - Zoom controls (+/−/reset) dan pinch-to-zoom pada mobile
 - Spell check toggle
 - ARIA labels dan `:focus-visible` indicators
 - Tooltips (`title`) pada semua butang dan kontrol
+- Multi-select delete: kekunci Delete/Backspace padam semua elemen yang dipilih sekaligus dalam cursor mode
+- Reset halaman: `confirm()` dialog + reset semua state (`selectedImage`, `multiSelectedElements`)
 
 ## Responsive & Mobile
 - Breakpoints: 1249px (tablet landscape), 1023px (tablet portrait), 767px (mobile landscape), 480px (mobile portrait)
@@ -128,7 +131,7 @@ Helper `ensureSpace(needed)` — semak overflow halaman dan tambah halaman baru 
 
 ## Export
 - PNG: `Ctrl+S` — save halaman semasa (2x scale, semua layers: canvas, images, shapes, tables, text)
-- PDF: jsPDF, loop semua halaman, render semua layers (canvas + images + shapes + tables + text) ke canvas, simpan sebagai `{tajuk}_{tarikh}.pdf`
+- PDF: jsPDF, loop semua halaman, render semua layers (canvas + images + shapes + tables + text) ke canvas, simpan sebagai `{tajuk}_{tarikh}.pdf`. Template `4suku` render garisan putus-putus (`setLineDash`)
 - JSON: export/import backup penuh notebook (termasuk settings, pages, canvas data)
 
 ---
@@ -174,3 +177,18 @@ Fungsi yang ada cleanup:
 - **WAJIB** panggil `setupTableCells(container)` selepas restore/paste jadual dari undo/clipboard
 - Butang destructive (reset, delete) **WAJIB** ada `confirm()` dialog
 - Semua layers (canvas, text, shape, image, table) **WAJIB** trigger `markDirty()` untuk autosave
+- Reset halaman **WAJIB** clear semua selection state: `selectedTextElement`, `selectedShape`, `selectedTable`, `selectedImage`, `clearMultiSelect()`
+- **JANGAN** tinggal `console.log` dalam production code
+- `catch` pada `saveToLocalStorage` **WAJIB** semak `QuotaExceededError` dan tunjuk toast
+
+## Isu Diketahui (Boleh Diperbaiki Kemudian)
+- Shape rotation/flip tidak dirender dalam PNG/PDF export (hanya CSS transform)
+- Arrow/line direction (`origWidth`/`origHeight`) diabaikan dalam PNG/PDF export
+- Mind map text `width`/`textAlign` tidak disokong oleh `createTextElementFromData` — teks tidak center dalam nod
+- `sanitizeHTML()` tidak strip `style` attribute (risiko CSS injection rendah — self-XSS sahaja)
+- Rich text formatting (inline `<span>`, `<font>`) hilang dalam PNG/PDF export — hanya guna warna/font asas elemen
+- `document.execCommand('foreColor')` deprecated — masih berfungsi tapi boleh hilang pada masa depan
+
+## Kredit & Pautan
+- Dibina oleh **Cikgu Aime**
+- Buy Me a Coffee: https://buymeacoffee.com/cikguaime
